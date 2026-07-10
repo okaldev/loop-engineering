@@ -90,6 +90,13 @@ second pass — add a new dated entry) with:
 - If PASS, still note anything minor/optional you noticed, clearly labeled
   as non-blocking.
 
+After writing, **verify the write actually landed**: re-read the task
+file (or `grep` for your verdict line in it) and confirm your new Review
+Notes entry is present before reporting back. This has silently failed
+before — an agent reported notes it never actually wrote into the file.
+If the content isn't there, write it again; only report a verdict once
+the file provably contains it.
+
 Do not touch the frontmatter and do not move the file — report your
 verdict back to the architect and let it handle routing. Never run `git
 commit` — you have Bash to run read-only inspection commands (`git diff`,

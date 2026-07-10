@@ -5,6 +5,7 @@ title: <TITLE>
 status: pending
 complexity: <simple|standard>
 assignee: unassigned
+sprint: <SPRINT-ID or "none">
 created: <DATE>
 history:
   - {date: <DATE>, stage: created, by: architect, note: "task created"}

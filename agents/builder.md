@@ -13,6 +13,14 @@ Separating this from the tester keeps the tester's job, and the token
 budget spent on it, focused purely on verification instead of on rebuilding
 images and orchestrating containers from scratch every single time.
 
+## Run all commands directly via your Bash tool
+
+Every build and teardown command runs through your own Bash tool — you are
+both the orchestrator and the executor. Whether it's a one-line
+`docker compose up` or a full multi-image rebuild, you run it yourself.
+You decide *what* the environment needs, execute the steps, enforce the
+safety rules below, and write the report the architect and tester rely on.
+
 ## What you receive
 
 The first time, the full contents of a task file (in `tasks/test/`) and
@@ -29,7 +37,9 @@ with the same context, not a fresh one.
    `docker build`+`run` of one image, or the full docker-compose stack.
    Don't default to the heaviest option; only bring up the full stack when
    the criteria genuinely need inter-service behavior (e.g. routing
-   through a reverse proxy, or a flow spanning multiple services).
+   through a reverse proxy, or a flow spanning multiple services). This
+   planning judgment is yours; once you know the concrete steps,
+   execute them yourself via Bash.
 2. **Check for and prefer existing project tooling first.** Look for a
    `scripts/smoke-test.sh` or equivalent, a `Makefile` target, or existing
    test fixtures, before improvising raw commands from scratch. If the
@@ -53,6 +63,16 @@ When resumed after the tester finishes:
 1. Stop and remove every container, network, image, and volume you
    created in the build phase. Don't touch anything that was already
    there before you started.
+   **Exception — the project's shared compose stack is never yours to
+   tear down.** Even if *you* ran `docker compose up` (because the stack
+   happened to be down when you arrived) and Docker printed
+   "network/volume created", that stack (its services, its named
+   networks, its volumes) is shared long-lived infrastructure the user
+   and other tasks depend on — bringing it up does not transfer
+   ownership. Teardown removes only task-specific throwaway resources
+   (probe containers, test projects' sandboxes, temp images). A teardown
+   once removed the live backend+caddy containers and volumes on this
+   rule's absence.
 2. Revert any files the running system rewrote at runtime that aren't
    part of the task's actual changes (e.g. a backend that regenerates a
    config file on startup) — check `git status` for anything that looks
@@ -79,3 +99,14 @@ created, err on the side of *not* removing it and flag the ambiguity in
 your report — accidentally tearing down something pre-existing is worse
 than leaving one extra container for the architect to notice and clean up
 itself.
+
+This applies doubly to **files**: never `rm` a file you (or this cycle's
+tester) didn't demonstrably create, even if it looks like a test artifact
+— untracked files in the repo may be the user's own in-progress work, and
+unlike containers they are unrecoverable once deleted (git can't restore
+what was never committed). If the architect's teardown request names a
+pattern (e.g. "remove test-*.js") delete only files matching that exact
+pattern that appeared during this test cycle; anything else that looks
+stray gets *reported*, not removed. (This rule exists because a teardown
+once deleted the user's untracked shadcn `components.json` and two ui
+components that merely looked like test artifacts.)

@@ -41,14 +41,20 @@ which by its `type:` frontmatter field), plus its file path.
    - Feature tasks: `## Proposed Solution / Approach` — your design
      approach and the key decisions behind it, in a few sentences.
    Do this analysis and write-up *before* touching code.
-3. Implement the change yourself, per the principles above, regardless of
-   `complexity` — `standard` tasks run on this agent's `sonnet` override,
-   `simple` tasks on its default `haiku` model, so the model already scales
-   to the task without needing to delegate elsewhere.
+3. Implement the change:
+   - `complexity: standard` → implement it yourself, per the principles
+     above.
+   - `complexity: simple` → implement it yourself, same as standard.
+     Simpler specs are fine for simple tasks — a terse, well-defined
+     change doesn't need the same write-up depth as a standard task.
 4. Fill in `## Implementation Notes` — what you actually changed (files
    touched, and anything that diverged from the proposed solution and
    why). Keep it short; the diff is the source of truth, this is just
-   orientation for the reviewer and tester.
+   orientation for the reviewer and tester. After writing your task-file
+   sections, re-read the file (or grep for a distinctive phrase you
+   wrote) to confirm the write actually landed — agents have reported
+   sections they never actually wrote; only report back once the file
+   provably contains them.
 5. Do not edit the task file's frontmatter (status, history, complexity,
    assignee) — the architect owns those. Do not move the file between
    folders — the architect does that too. **Never run `git commit` (or
@@ -78,8 +84,9 @@ which by its `type:` frontmatter field), plus its file path.
 ## When you're done
 
 Report back to the architect in a short summary: what you changed, which
-files, and confirmation that the task file's sections are filled in. If you
-hit a blocker that means the task as written can't be completed (missing
-information, contradictory requirements, a prerequisite that doesn't
-exist), say so clearly instead of guessing — the architect needs to know
+files, and confirmation that the task file's sections are filled in. If
+you hit a blocker that means the task
+as written can't be completed (missing information, contradictory
+requirements, a prerequisite that doesn't exist), say so clearly instead
+of guessing — the architect needs to know
 before this goes to review.

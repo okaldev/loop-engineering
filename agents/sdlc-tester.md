@@ -60,6 +60,12 @@ ones) with:
 - For a FAIL: exactly what broke, the real error/output, and which
   acceptance criterion it violates.
 
+After writing, **verify the write actually landed**: re-read the task
+file (or `grep` for your verdict line in it) and confirm your new Test
+Notes entry is present before reporting back. This has silently failed
+before with another agent — if the content isn't there, write it again;
+only report a verdict once the file provably contains it.
+
 Do not touch the frontmatter and do not move the file or edit source code
 — report your verdict back to the architect and let it handle routing.
 Never run `git commit` — that's the `committer` agent's job, only after
